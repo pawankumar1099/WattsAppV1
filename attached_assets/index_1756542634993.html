@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Management Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="nav-item active" data-tab="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" data-tab="alerts">
+                <i class="fas fa-bell"></i>
+                <span>Alerts & Notifications</span>
+            </div>
+            <div class="nav-item" data-tab="household">
+                <i class="fas fa-home"></i>
+                <span>Household Usage</span>
+            </div>
+            <div class="nav-item" data-tab="control">
+                <i class="fas fa-cogs"></i>
+                <span>Control Panel</span>
+            </div>
+            <div class="nav-item" data-tab="reports">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reports & Analytics</span>
+            </div>
+            <div class="nav-item" data-tab="settings">
+                <i class="fas fa-sliders-h"></i>
+                <span>Settings & Language</span>
+            </div>
+            <div class="nav-item" data-tab="help">
+                <i class="fas fa-question-circle"></i>
+                <span>Help & Training</span>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="tab-content" id="dashboard-tab">
+                <header class="dashboard-header">
+                    <h1>Energy Management Dashboard</h1>
+                    <div class="last-updated">
+                        Last updated: <span id="last-updated-time"></span>
+                    </div>
+                </header>
+
+                <!-- Energy Flow Visualization -->
+                <section class="energy-flow-section">
+                    <h2>Live Energy Flow (solar/wind → storage → households) visualization</h2>
+                    <div class="energy-flow-container">
+                        <div class="energy-source">
+                            <div class="source-item solar">
+                                <i class="fas fa-sun"></i>
+                                <span>Solar</span>
+                                <div class="energy-value" id="solar-output">0 kW</div>
+                            </div>
+                            <div class="source-item wind">
+                                <i class="fas fa-wind"></i>
+                                <span>Wind</span>
+                                <div class="energy-value" id="wind-output">0 kW</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flow-arrows">
+                            <div class="arrow arrow-to-storage">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="storage-system">
+                            <div class="storage-item">
+                                <i class="fas fa-battery-three-quarters"></i>
+                                <span>Storage</span>
+                                <div class="energy-value" id="storage-level">0%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flow-arrows">
+                            <div class="arrow arrow-to-household">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="household-consumption">
+                            <div class="household-item">
+                                <i class="fas fa-home"></i>
+                                <span>Households</span>
+                                <div class="energy-value" id="household-consumption">0 kW</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Main Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <!-- Generation vs Consumption Chart -->
+                    <section class="chart-section">
+                        <h2>Current Generation vs Consumption (real-time graph)</h2>
+                        <div class="chart-container">
+                            <canvas id="generationChart"></canvas>
+                        </div>
+                    </section>
+
+                    <!-- Battery Status -->
+                    <section class="battery-section">
+                        <h2>Battery Status (percentage & health)</h2>
+                        <div class="battery-display">
+                            <div class="battery-visual">
+                                <div class="battery-icon">
+                                    <div class="battery-level" id="battery-level-bar"></div>
+                                </div>
+                                <div class="battery-percentage" id="battery-percentage">0%</div>
+                            </div>
+                            <div class="battery-info">
+                                <div class="battery-health">
+                                    <span>Health: </span>
+                                    <span id="battery-health" class="health-good">Good</span>
+                                </div>
+                                <div class="battery-voltage">
+                                    <span>Voltage: </span>
+                                    <span id="battery-voltage">0V</span>
+                                </div>
+                                <div class="battery-temp">
+                                    <span>Temperature: </span>
+                                    <span id="battery-temp">0°C</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Grid Status -->
+                    <section class="grid-section">
+                        <h2>Grid Status (On/Off, Load % indicator)</h2>
+                        <div class="grid-display">
+                            <div class="grid-status">
+                                <div class="status-indicator" id="grid-status-indicator">
+                                    <div class="status-light"></div>
+                                    <span id="grid-status-text">ON</span>
+                                </div>
+                            </div>
+                            <div class="grid-load">
+                                <div class="load-label">Grid Load</div>
+                                <div class="load-meter">
+                                    <div class="load-bar" id="grid-load-bar"></div>
+                                </div>
+                                <div class="load-percentage" id="grid-load-percentage">0%</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Quick Summary -->
+                    <section class="summary-section">
+                        <h2>Quick Summary:</h2>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <div class="summary-icon">
+                                    <i class="fas fa-solar-panel"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <div class="summary-label">Total energy generated today</div>
+                                    <div class="summary-value" id="total-generated">0 kWh</div>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-icon">
+                                    <i class="fas fa-plug"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <div class="summary-label">Total consumed today</div>
+                                    <div class="summary-value" id="total-consumed">0 kWh</div>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-icon">
+                                    <i class="fas fa-percentage"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <div class="summary-label">Efficiency %</div>
+                                    <div class="summary-value" id="efficiency-percentage">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Placeholder content for other tabs -->
+            <div class="tab-content" id="alerts-tab" style="display: none;">
+                <h1>Alerts & Notifications</h1>
+                <p>This section will contain alerts and notifications.</p>
+            </div>
+
+            <div class="tab-content" id="household-tab" style="display: none;">
+                <h1>Household Usage</h1>
+                <p>This section will contain household usage details.</p>
+            </div>
+
+            <div class="tab-content" id="control-tab" style="display: none;">
+                <h1>Control Panel</h1>
+                <p>This section will contain system controls.</p>
+            </div>
+
+            <div class="tab-content" id="reports-tab" style="display: none;">
+                <h1>Reports & Analytics</h1>
+                <p>This section will contain reports and analytics.</p>
+            </div>
+
+            <div class="tab-content" id="settings-tab" style="display: none;">
+                <h1>Settings & Language</h1>
+                <p>This section will contain settings and language options.</p>
+            </div>
+
+            <div class="tab-content" id="help-tab" style="display: none;">
+                <h1>Help & Training</h1>
+                <p>This section will contain help and training materials.</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

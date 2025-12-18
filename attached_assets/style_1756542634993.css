@@ -1,0 +1,511 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    line-height: 1.6;
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    background-color: #2d2d2d;
+    padding: 20px 0;
+    border-right: 1px solid #444;
+    flex-shrink: 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.nav-item:hover {
+    background-color: #3a3a3a;
+}
+
+.nav-item.active {
+    background-color: #4a4a4a;
+    border-left-color: #00bcd4;
+}
+
+.nav-item i {
+    margin-right: 15px;
+    width: 20px;
+    font-size: 16px;
+    color: #888;
+}
+
+.nav-item.active i {
+    color: #00bcd4;
+}
+
+.nav-item span {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+    background-color: #1a1a1a;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333;
+}
+
+.dashboard-header h1 {
+    font-size: 28px;
+    font-weight: 300;
+    color: #ffffff;
+}
+
+.last-updated {
+    font-size: 14px;
+    color: #888;
+}
+
+/* Energy Flow Visualization */
+.energy-flow-section {
+    margin-bottom: 40px;
+    padding: 25px;
+    background-color: #2a2a2a;
+    border-radius: 12px;
+    border: 1px solid #444;
+}
+
+.energy-flow-section h2 {
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 25px;
+    color: #ffffff;
+}
+
+.energy-flow-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.energy-source, .storage-system, .household-consumption {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.source-item, .storage-item, .household-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #3a3a3a;
+    border-radius: 10px;
+    border: 1px solid #555;
+    min-width: 120px;
+}
+
+.source-item i, .storage-item i, .household-item i {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.solar i {
+    color: #ffa726;
+}
+
+.wind i {
+    color: #42a5f5;
+}
+
+.storage-item i {
+    color: #66bb6a;
+}
+
+.household-item i {
+    color: #ff7043;
+}
+
+.energy-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #00bcd4;
+    margin-top: 5px;
+}
+
+.flow-arrows {
+    display: flex;
+    align-items: center;
+}
+
+.arrow {
+    font-size: 20px;
+    color: #00bcd4;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 25px;
+}
+
+.chart-section {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.battery-section {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.grid-section {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.summary-section {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+/* Section Styles */
+.chart-section, .battery-section, .grid-section, .summary-section {
+    background-color: #2a2a2a;
+    border-radius: 12px;
+    padding: 25px;
+    border: 1px solid #444;
+}
+
+.chart-section h2, .battery-section h2, .grid-section h2, .summary-section h2 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+/* Chart Container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    background-color: #333;
+    border-radius: 8px;
+    padding: 15px;
+}
+
+/* Battery Display */
+.battery-display {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.battery-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.battery-icon {
+    width: 60px;
+    height: 100px;
+    border: 3px solid #555;
+    border-radius: 8px;
+    position: relative;
+    background-color: #1a1a1a;
+}
+
+.battery-icon::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 6px;
+    background-color: #555;
+    border-radius: 3px 3px 0 0;
+}
+
+.battery-level {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, #4caf50, #8bc34a);
+    border-radius: 4px 4px 4px 4px;
+    transition: height 0.3s ease;
+    height: 0%;
+}
+
+.battery-level.low {
+    background: linear-gradient(to top, #f44336, #ff5722);
+}
+
+.battery-level.medium {
+    background: linear-gradient(to top, #ff9800, #ffc107);
+}
+
+.battery-percentage {
+    font-size: 18px;
+    font-weight: 600;
+    color: #00bcd4;
+}
+
+.battery-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.battery-info > div {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.health-good {
+    color: #4caf50;
+}
+
+.health-warning {
+    color: #ff9800;
+}
+
+.health-critical {
+    color: #f44336;
+}
+
+/* Grid Status */
+.grid-display {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.grid-status {
+    display: flex;
+    justify-content: center;
+}
+
+.status-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-light {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #66bb6a;
+    box-shadow: 0 0 15px rgba(244, 67, 54, 0.5);
+    transition: all 0.3s ease;
+}
+
+.status-light.on {
+    background-color: #4caf50;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+}
+
+.grid-load {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.load-label {
+    font-size: 14px;
+    color: #888;
+    text-align: center;
+}
+
+.load-meter {
+    height: 8px;
+    background-color: #444;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.load-bar {
+    height: 100%;
+    background: linear-gradient(to right, #4caf50, #ff9800, #f44336);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.load-percentage {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    color: #00bcd4;
+}
+
+/* Summary Section */
+.summary-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background-color: #3a3a3a;
+    border-radius: 10px;
+    border: 1px solid #555;
+}
+
+.summary-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #00bcd4;
+    border-radius: 50%;
+    color: #1a1a1a;
+    font-size: 20px;
+}
+
+.summary-content {
+    flex: 1;
+}
+
+.summary-label {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+.summary-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto;
+    }
+    
+    .chart-section { grid-column: 1; grid-row: 1; }
+    .battery-section { grid-column: 1; grid-row: 2; }
+    .grid-section { grid-column: 1; grid-row: 3; }
+    .summary-section { grid-column: 1; grid-row: 4; }
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        display: flex;
+        overflow-x: auto;
+        padding: 10px 0;
+    }
+    
+    .nav-item {
+        flex-direction: column;
+        min-width: 100px;
+        text-align: center;
+        padding: 10px;
+    }
+    
+    .nav-item i {
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+    
+    .main-content {
+        padding: 20px;
+    }
+    
+    .energy-flow-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .flow-arrows {
+        transform: rotate(90deg);
+        margin: 10px 0;
+    }
+    
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .battery-display {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .summary-grid {
+        gap: 15px;
+    }
+    
+    .summary-item {
+        padding: 15px;
+    }
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Animation for data updates */
+.animate-update {
+    animation: highlight 0.5s ease;
+}
+
+@keyframes highlight {
+    0% { background-color: rgba(0, 188, 212, 0.3); }
+    100% { background-color: transparent; }
+}

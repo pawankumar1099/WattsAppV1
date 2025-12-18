@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Management Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="nav-item active" data-tab="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" data-tab="alerts">
+                <i class="fas fa-bell"></i>
+                <span>Alerts & Notifications</span>
+                <div class="alert-badge" id="alert-count">0</div>
+            </div>
+            <div class="nav-item" data-tab="household">
+                <i class="fas fa-home"></i>
+                <span>Household Usage</span>
+            </div>
+            <div class="nav-item" data-tab="control">
+                <i class="fas fa-cogs"></i>
+                <span>Control Panel</span>
+            </div>
+            <div class="nav-item" data-tab="reports">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reports & Analytics</span>
+            </div>
+            <div class="nav-item" data-tab="settings">
+                <i class="fas fa-sliders-h"></i>
+                <span>Settings & Language</span>
+            </div>
+            <div class="nav-item" data-tab="help">
+                <i class="fas fa-question-circle"></i>
+                <span>Help & Training</span>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <div class="tab-content active" id="dashboard-tab">
+                <header class="dashboard-header">
+                    <h1>Energy Management Dashboard</h1>
+                    <div class="last-updated">
+                        Last updated: <span id="last-updated-time"></span>
+                    </div>
+                </header>
+
+                <!-- Energy Flow Visualization -->
+                <section class="energy-flow-section">
+                    <h2>Live Energy Flow (solar/wind → storage → households) visualization</h2>
+                    <div class="energy-flow-container">
+                        <div class="energy-source">
+                            <div class="source-item solar">
+                                <i class="fas fa-sun"></i>
+                                <span>Solar</span>
+                                <div class="energy-value" id="solar-output">0 kW</div>
+                            </div>
+                            <div class="source-item wind">
+                                <i class="fas fa-wind"></i>
+                                <span>Wind</span>
+                                <div class="energy-value" id="wind-output">0 kW</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flow-arrows">
+                            <div class="arrow arrow-to-storage">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="storage-system">
+                            <div class="storage-item">
+                                <i class="fas fa-battery-three-quarters"></i>
+                                <span>Storage</span>
+                                <div class="energy-value" id="storage-level">0%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flow-arrows">
+                            <div class="arrow arrow-to-household">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="household-consumption">
+                            <div class="household-item">
+                                <i class="fas fa-home"></i>
+                                <span>Households</span>
+                                <div class="energy-value" id="household-consumption">0 kW</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Main Dashboard Grid -->
+                <div class="dashboard-grid">
+                    <!-- Generation vs Consumption Chart -->
+                    <section class="chart-section">
+                        <div class="chart-header">
+                            <h2>Current Generation vs Consumption (real-time graph)</h2>
+                            <div class="chart-filters">
+                                <button class="filter-btn active" data-period="24h">24H</button>
+                                <button class="filter-btn" data-period="7d">7D</button>
+                                <button class="filter-btn" data-period="30d">30D</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="generationChart"></canvas>
+                        </div>
+                    </section>
+
+                    <!-- Battery Status -->
+                    <section class="battery-section">
+                        <h2>Battery Status (percentage & health)</h2>
+                        <div class="battery-display">
+                            <div class="battery-visual">
+                                <div class="battery-icon">
+                                    <div class="battery-level" id="battery-level-bar"></div>
+                                </div>
+                                <div class="battery-percentage" id="battery-percentage">0%</div>
+                            </div>
+                            <div class="battery-info">
+                                <div class="battery-health">
+                                    <span>Health: </span>
+                                    <span id="battery-health" class="health-good">Good</span>
+                                </div>
+                                <div class="battery-voltage">
+                                    <span>Voltage: </span>
+                                    <span id="battery-voltage">0V</span>
+                                </div>
+                                <div class="battery-temp">
+                                    <span>Temperature: </span>
+                                    <span id="battery-temp">0°C</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Grid Status -->
+                    <section class="grid-section">
+                        <h2>Grid Status (On/Off, Load % indicator)</h2>
+                        <div class="grid-display">
+                            <div class="grid-status">
+                                <div class="status-indicator" id="grid-status-indicator">
+                                    <div class="status-light"></div>
+                                    <span id="grid-status-text">ON</span>
+                                </div>
+                            </div>
+                            <div class="grid-load">
+                                <div class="load-label">Grid Load</div>
+                                <div class="load-meter">
+                                    <div class="load-bar" id="grid-load-bar"></div>
+                                </div>
+                                <div class="load-percentage" id="grid-load-percentage">0%</div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Quick Summary -->
+                    <section class="summary-section">
+                        <h2>Quick Summary:</h2>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <div class="summary-icon">
+                                    <i class="fas fa-solar-panel"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <div class="summary-label">Total energy generated today</div>
+                                    <div class="summary-value" id="total-generated">0 kWh</div>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-icon">
+                                    <i class="fas fa-plug"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <div class="summary-label">Total consumed today</div>
+                                    <div class="summary-value" id="total-consumed">0 kWh</div>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-icon">
+                                    <i class="fas fa-percentage"></i>
+                                </div>
+                                <div class="summary-content">
+                                    <div class="summary-label">Efficiency %</div>
+                                    <div class="summary-value" id="efficiency-percentage">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Alerts & Notifications Tab -->
+            <div class="tab-content" id="alerts-tab">
+                <header class="section-header">
+                    <h1>Alerts & Notifications</h1>
+                    <div class="header-controls">
+                        <button class="btn btn-primary" id="clear-all-alerts">Clear All</button>
+                        <button class="btn btn-secondary" id="alert-settings-btn">Settings</button>
+                    </div>
+                </header>
+
+                <div class="alerts-container">
+                    <div class="alert-filters">
+                        <button class="filter-btn active" data-type="all">All</button>
+                        <button class="filter-btn" data-type="critical">Critical</button>
+                        <button class="filter-btn" data-type="warning">Warning</button>
+                        <button class="filter-btn" data-type="info">Info</button>
+                    </div>
+
+                    <div class="alerts-list" id="alerts-list">
+                        <!-- Alerts will be populated by JavaScript -->
+                    </div>
+
+                    <div class="alert-settings" id="alert-settings">
+                        <h3>Alert Configuration</h3>
+                        <div class="settings-grid">
+                            <div class="setting-item">
+                                <label>Low Battery Alert Threshold</label>
+                                <input type="range" id="battery-threshold" min="10" max="50" value="20">
+                                <span id="battery-threshold-value">20%</span>
+                            </div>
+                            <div class="setting-item">
+                                <label>High Grid Load Alert</label>
+                                <input type="range" id="grid-threshold" min="50" max="95" value="80">
+                                <span id="grid-threshold-value">80%</span>
+                            </div>
+                            <div class="setting-item">
+                                <label>Enable Push Notifications</label>
+                                <input type="checkbox" id="push-notifications" checked>
+                            </div>
+                            <div class="setting-item">
+                                <label>Enable Email Alerts</label>
+                                <input type="checkbox" id="email-alerts">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Household Usage Tab -->
+            <div class="tab-content" id="household-tab">
+                <header class="section-header">
+                    <h1>Household Usage</h1>
+                    <div class="header-controls">
+                        <select id="household-selector">
+                            <option value="all">All Households</option>
+                            <option value="house1">House 1</option>
+                            <option value="house2">House 2</option>
+                            <option value="house3">House 3</option>
+                        </select>
+                    </div>
+                </header>
+
+                <div class="household-grid">
+                    <div class="household-overview">
+                        <h3>Usage Overview</h3>
+                        <div class="usage-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-home"></i>
+                                <div class="stat-content">
+                                    <span class="stat-label">Total Households</span>
+                                    <span class="stat-value" id="total-households">3</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-plug"></i>
+                                <div class="stat-content">
+                                    <span class="stat-label">Active Devices</span>
+                                    <span class="stat-value" id="active-devices">12</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-bolt"></i>
+                                <div class="stat-content">
+                                    <span class="stat-label">Current Usage</span>
+                                    <span class="stat-value" id="current-total-usage">8.4 kW</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="households-list">
+                        <h3>Household Details</h3>
+                        <div id="household-cards">
+                            <!-- Household cards will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="device-breakdown">
+                        <h3>Device Breakdown</h3>
+                        <div class="chart-container">
+                            <canvas id="deviceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="usage-history">
+                        <h3>Usage History</h3>
+                        <div class="chart-filters">
+                            <button class="filter-btn active" data-period="24h">24H</button>
+                            <button class="filter-btn" data-period="7d">7D</button>
+                            <button class="filter-btn" data-period="30d">30D</button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="usageHistoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Panel Tab -->
+            <div class="tab-content" id="control-tab">
+                <header class="section-header">
+                    <h1>Control Panel</h1>
+                    <div class="header-controls">
+                        <div class="emergency-stop">
+                            <button class="btn btn-danger" id="emergency-stop">Emergency Stop</button>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="control-grid">
+                    <div class="system-controls">
+                        <h3>System Controls</h3>
+                        <div class="control-section">
+                            <div class="control-item">
+                                <label>Grid Connection</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="grid-toggle" checked>
+                                    <span class="slider"></span>
+                                </div>
+                            </div>
+                            <div class="control-item">
+                                <label>Auto Load Balancing</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="auto-balance" checked>
+                                    <span class="slider"></span>
+                                </div>
+                            </div>
+                            <div class="control-item">
+                                <label>Battery Charging</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="battery-charging" checked>
+                                    <span class="slider"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="device-controls">
+                        <h3>Device Management</h3>
+                        <div id="device-control-list">
+                            <!-- Device controls will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="energy-limits">
+                        <h3>Energy Limits</h3>
+                        <div class="limit-controls">
+                            <div class="limit-item">
+                                <label>Maximum Grid Import (kW)</label>
+                                <input type="range" id="max-grid-import" min="0" max="20" value="10">
+                                <span id="max-grid-value">10 kW</span>
+                            </div>
+                            <div class="limit-item">
+                                <label>Battery Discharge Limit (%)</label>
+                                <input type="range" id="battery-discharge-limit" min="10" max="80" value="20">
+                                <span id="discharge-limit-value">20%</span>
+                            </div>
+                            <div class="limit-item">
+                                <label>Load Priority</label>
+                                <select id="load-priority">
+                                    <option value="essential">Essential Only</option>
+                                    <option value="normal" selected>Normal</option>
+                                    <option value="comfort">Comfort</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="schedule-controls">
+                        <h3>Automated Schedules</h3>
+                        <div class="schedule-list" id="schedule-list">
+                            <!-- Schedules will be populated by JavaScript -->
+                        </div>
+                        <button class="btn btn-primary" id="add-schedule">Add Schedule</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports & Analytics Tab -->
+            <div class="tab-content" id="reports-tab">
+                <header class="section-header">
+                    <h1>Reports & Analytics</h1>
+                    <div class="header-controls">
+                        <select id="report-period">
+                            <option value="7d">Last 7 Days</option>
+                            <option value="30d">Last 30 Days</option>
+                            <option value="90d">Last 90 Days</option>
+                            <option value="1y">Last Year</option>
+                        </select>
+                        <button class="btn btn-primary" id="export-report">Export Report</button>
+                    </div>
+                </header>
+
+                <div class="reports-grid">
+                    <div class="report-summary">
+                        <h3>Performance Summary</h3>
+                        <div class="summary-cards">
+                            <div class="summary-card">
+                                <i class="fas fa-chart-line"></i>
+                                <div class="card-content">
+                                    <span class="card-label">Energy Efficiency</span>
+                                    <span class="card-value" id="efficiency-trend">+5.2%</span>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <i class="fas fa-dollar-sign"></i>
+                                <div class="card-content">
+                                    <span class="card-label">Cost Savings</span>
+                                    <span class="card-value" id="cost-savings">$142.30</span>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <i class="fas fa-leaf"></i>
+                                <div class="card-content">
+                                    <span class="card-label">CO2 Reduced</span>
+                                    <span class="card-value" id="co2-reduced">285 kg</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="energy-trends">
+                        <h3>Energy Trends</h3>
+                        <div class="chart-filters">
+                            <button class="filter-btn active" data-chart="generation">Generation</button>
+                            <button class="filter-btn" data-chart="consumption">Consumption</button>
+                            <button class="filter-btn" data-chart="efficiency">Efficiency</button>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="trendsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="detailed-analytics">
+                        <h3>Detailed Analytics</h3>
+                        <div class="analytics-tabs">
+                            <button class="tab-btn active" data-analytics="daily">Daily</button>
+                            <button class="tab-btn" data-analytics="weekly">Weekly</button>
+                            <button class="tab-btn" data-analytics="monthly">Monthly</button>
+                        </div>
+                        <div class="analytics-content" id="analytics-content">
+                            <!-- Analytics content will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="peak-usage">
+                        <h3>Peak Usage Analysis</h3>
+                        <div class="chart-container">
+                            <canvas id="peakUsageChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings & Language Tab -->
+            <div class="tab-content" id="settings-tab">
+                <header class="section-header">
+                    <h1>Settings & Language</h1>
+                    <div class="header-controls">
+                        <button class="btn btn-primary" id="save-settings">Save Settings</button>
+                        <button class="btn btn-secondary" id="reset-settings">Reset to Default</button>
+                    </div>
+                </header>
+
+                <div class="settings-container">
+                    <div class="settings-section">
+                        <h3>General Settings</h3>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Language</label>
+                                <select id="language-select">
+                                    <option value="en">English</option>
+                                    <option value="es">Español</option>
+                                    <option value="fr">Français</option>
+                                    <option value="de">Deutsch</option>
+                                    <option value="zh">中文</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Theme</label>
+                                <select id="theme-select">
+                                    <option value="dark">Dark</option>
+                                    <option value="light">Light</option>
+                                    <option value="auto">Auto</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Time Zone</label>
+                                <select id="timezone-select">
+                                    <option value="UTC">UTC</option>
+                                    <option value="America/New_York">Eastern Time</option>
+                                    <option value="America/Chicago">Central Time</option>
+                                    <option value="America/Denver">Mountain Time</option>
+                                    <option value="America/Los_Angeles">Pacific Time</option>
+                                    <option value="Europe/London">London</option>
+                                    <option value="Europe/Paris">Paris</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Dashboard Preferences</h3>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Update Frequency</label>
+                                <select id="update-frequency">
+                                    <option value="1000">1 second</option>
+                                    <option value="5000" selected>5 seconds</option>
+                                    <option value="10000">10 seconds</option>
+                                    <option value="30000">30 seconds</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Default Chart Period</label>
+                                <select id="default-chart-period">
+                                    <option value="24h" selected>24 Hours</option>
+                                    <option value="7d">7 Days</option>
+                                    <option value="30d">30 Days</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Show Animation</label>
+                                <input type="checkbox" id="show-animations" checked>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Units & Display</h3>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Energy Unit</label>
+                                <select id="energy-unit">
+                                    <option value="kwh">kWh</option>
+                                    <option value="mwh">MWh</option>
+                                    <option value="wh">Wh</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Power Unit</label>
+                                <select id="power-unit">
+                                    <option value="kw">kW</option>
+                                    <option value="mw">MW</option>
+                                    <option value="w">W</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Temperature Unit</label>
+                                <select id="temperature-unit">
+                                    <option value="celsius">Celsius (°C)</option>
+                                    <option value="fahrenheit">Fahrenheit (°F)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Data & Privacy</h3>
+                        <div class="settings-group">
+                            <div class="setting-item">
+                                <label>Data Retention Period</label>
+                                <select id="data-retention">
+                                    <option value="30">30 days</option>
+                                    <option value="90" selected>90 days</option>
+                                    <option value="180">180 days</option>
+                                    <option value="365">1 year</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label>Share Anonymous Usage Data</label>
+                                <input type="checkbox" id="share-usage-data">
+                            </div>
+                            <div class="setting-item">
+                                <label>Enable Cloud Backup</label>
+                                <input type="checkbox" id="cloud-backup" checked>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help & Training Tab -->
+            <div class="tab-content" id="help-tab">
+                <header class="section-header">
+                    <h1>Help & Training</h1>
+                    <div class="header-controls">
+                        <div class="search-box">
+                            <input type="text" id="help-search" placeholder="Search help topics...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="help-container">
+                    <div class="help-sidebar">
+                        <h3>Quick Access</h3>
+                        <ul class="help-menu">
+                            <li><a href="#getting-started" class="help-link active">Getting Started</a></li>
+                            <li><a href="#dashboard-guide" class="help-link">Dashboard Guide</a></li>
+                            <li><a href="#alerts-setup" class="help-link">Setting Up Alerts</a></li>
+                            <li><a href="#device-control" class="help-link">Device Control</a></li>
+                            <li><a href="#reports" class="help-link">Understanding Reports</a></li>
+                            <li><a href="#troubleshooting" class="help-link">Troubleshooting</a></li>
+                            <li><a href="#faq" class="help-link">FAQ</a></li>
+                            <li><a href="#contact" class="help-link">Contact Support</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="help-content">
+                        <div class="help-section active" id="getting-started">
+                            <h2>Getting Started</h2>
+                            <div class="help-text">
+                                <p>Welcome to the Energy Management Dashboard! This comprehensive system helps you monitor and control your energy consumption and generation.</p>
+                                
+                                <h3>First Steps</h3>
+                                <ol>
+                                    <li><strong>Dashboard Overview:</strong> The main dashboard provides real-time energy flow visualization and key metrics.</li>
+                                    <li><strong>Navigation:</strong> Use the sidebar to access different sections of the system.</li>
+                                    <li><strong>Real-time Updates:</strong> Data refreshes automatically every 5 seconds by default.</li>
+                                </ol>
+
+                                <h3>Key Features</h3>
+                                <ul>
+                                    <li>Real-time energy flow monitoring</li>
+                                    <li>Battery status and health tracking</li>
+                                    <li>Grid connection monitoring</li>
+                                    <li>Household usage breakdown</li>
+                                    <li>Automated alerts and notifications</li>
+                                    <li>Device control and automation</li>
+                                    <li>Comprehensive reporting and analytics</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="help-section" id="dashboard-guide">
+                            <h2>Dashboard Guide</h2>
+                            <div class="help-text">
+                                <h3>Energy Flow Visualization</h3>
+                                <p>The top section shows real-time energy flow from generation sources (solar/wind) through storage to household consumption.</p>
+
+                                <h3>Chart Controls</h3>
+                                <p>Use the filter buttons (24H, 7D, 30D) to change the time period displayed in charts.</p>
+
+                                <h3>Battery Status</h3>
+                                <p>Monitor battery percentage, health, voltage, and temperature. Color coding indicates status:</p>
+                                <ul>
+                                    <li><span style="color: #4caf50;">Green:</span> Good (>50%)</li>
+                                    <li><span style="color: #ff9800;">Orange:</span> Medium (20-50%)</li>
+                                    <li><span style="color: #f44336;">Red:</span> Low (<20%)</li>
+                                </ul>
+
+                                <h3>Grid Status</h3>
+                                <p>Shows whether the grid connection is active and the current load percentage.</p>
+                            </div>
+                        </div>
+
+                        <div class="help-section" id="alerts-setup">
+                            <h2>Setting Up Alerts</h2>
+                            <div class="help-text">
+                                <h3>Alert Types</h3>
+                                <ul>
+                                    <li><strong>Critical:</strong> Immediate attention required (system failures, emergency stops)</li>
+                                    <li><strong>Warning:</strong> Potential issues (low battery, high grid load)</li>
+                                    <li><strong>Info:</strong> General notifications (maintenance reminders, updates)</li>
+                                </ul>
+
+                                <h3>Configuration</h3>
+                                <p>Customize alert thresholds in the Alerts & Notifications section:</p>
+                                <ol>
+                                    <li>Go to Alerts & Notifications</li>
+                                    <li>Click "Settings" button</li>
+                                    <li>Adjust thresholds for battery and grid load</li>
+                                    <li>Enable/disable push notifications and email alerts</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div class="help-section" id="device-control">
+                            <h2>Device Control</h2>
+                            <div class="help-text">
+                                <h3>System Controls</h3>
+                                <p>The Control Panel allows you to manage system settings:</p>
+                                <ul>
+                                    <li><strong>Grid Connection:</strong> Enable/disable grid connectivity</li>
+                                    <li><strong>Auto Load Balancing:</strong> Automatic power distribution</li>
+                                    <li><strong>Battery Charging:</strong> Control battery charging behavior</li>
+                                </ul>
+
+                                <h3>Device Management</h3>
+                                <p>Individual devices can be controlled remotely:</p>
+                                <ul>
+                                    <li>Turn devices on/off</li>
+                                    <li>Set priority levels</li>
+                                    <li>Schedule automatic operations</li>
+                                </ul>
+
+                                <h3>Energy Limits</h3>
+                                <p>Set maximum power import limits and battery discharge thresholds for optimal efficiency.</p>
+                            </div>
+                        </div>
+
+                        <div class="help-section" id="reports">
+                            <h2>Understanding Reports</h2>
+                            <div class="help-text">
+                                <h3>Performance Metrics</h3>
+                                <ul>
+                                    <li><strong>Energy Efficiency:</strong> Ratio of energy consumed to energy generated</li>
+                                    <li><strong>Cost Savings:</strong> Financial savings compared to grid-only consumption</li>
+                                    <li><strong>CO2 Reduction:</strong> Environmental impact of renewable energy usage</li>
+                                </ul>
+
+                                <h3>Trend Analysis</h3>
+                                <p>Charts show patterns over different time periods to help optimize energy usage.</p>
+
+                                <h3>Peak Usage Analysis</h3>
+                                <p>Identify peak consumption times to optimize load scheduling and reduce costs.</p>
+                            </div>
+                        </div>
+
+                        <div class="help-section" id="troubleshooting">
+                            <h2>Troubleshooting</h2>
+                            <div class="help-text">
+                                <h3>Common Issues</h3>
+                                
+                                <h4>Dashboard Not Updating</h4>
+                                <ul>
+                                    <li>Check internet connection</li>
+                                    <li>Refresh the page</li>
+                                    <li>Verify system communication</li>
+                                </ul>
+
+                                <h4>Low Battery Alerts</h4>
+                                <ul>
+                                    <li>Check solar/wind generation</li>
+                                    <li>Reduce non-essential loads</li>
+                                    <li>Enable grid charging if available</li>
+                                </ul>
+
+                                <h4>Grid Connection Issues</h4>
+                                <ul>
+                                    <li>Verify grid connection status</li>
+                                    <li>Check for utility outages</li>
+                                    <li>Contact utility provider if needed</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="help-section" id="faq">
+                            <h2>Frequently Asked Questions</h2>
+                            <div class="help-text">
+                                <div class="faq-item">
+                                    <h4>Q: How often does the system update data?</h4>
+                                    <p>A: By default, data updates every 5 seconds. You can change this in Settings.</p>
+                                </div>
+
+                                <div class="faq-item">
+                                    <h4>Q: Can I control devices remotely?</h4>
+                                    <p>A: Yes, the Control Panel allows remote device management and scheduling.</p>
+                                </div>
+
+                                <div class="faq-item">
+                                    <h4>Q: How is energy efficiency calculated?</h4>
+                                    <p>A: Efficiency is the ratio of renewable energy used to total consumption, expressed as a percentage.</p>
+                                </div>
+
+                                <div class="faq-item">
+                                    <h4>Q: What happens during a power outage?</h4>
+                                    <p>A: The system automatically switches to battery power for essential loads based on your priority settings.</p>
+                                </div>
+
+                                <div class="faq-item">
+                                    <h4>Q: How can I reduce my energy consumption?</h4>
+                                    <p>A: Use the Reports section to identify peak usage times and adjust device schedules accordingly.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="help-section" id="contact">
+                            <h2>Contact Support</h2>
+                            <div class="help-text">
+                                <div class="contact-info">
+                                    <div class="contact-item">
+                                        <i class="fas fa-phone"></i>
+                                        <div>
+                                            <h4>Phone Support</h4>
+                                            <p>1-800-ENERGY-1 (1-800-363-7491)</p>
+                                            <p>Available 24/7 for emergency issues</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="contact-item">
+                                        <i class="fas fa-envelope"></i>
+                                        <div>
+                                            <h4>Email Support</h4>
+                                            <p>support@energymanagement.com</p>
+                                            <p>Response within 24 hours</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="contact-item">
+                                        <i class="fas fa-comments"></i>
+                                        <div>
+                                            <h4>Live Chat</h4>
+                                            <p>Available Monday-Friday, 8 AM - 6 PM</p>
+                                            <button class="btn btn-primary">Start Chat</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="contact-item">
+                                        <i class="fas fa-globe"></i>
+                                        <div>
+                                            <h4>Online Resources</h4>
+                                            <p>Visit our knowledge base at:</p>
+                                            <p>help.energymanagement.com</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/household.js"></script>
+    <script src="js/control.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/help.js"></script>
+</body>
+</html>
